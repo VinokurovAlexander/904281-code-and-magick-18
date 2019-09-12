@@ -1,7 +1,7 @@
 # Учебный проект «Код и Магия» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Винокуров](https://up.htmlacademy.ru/javascript/18/user/904281).
-* Наставник: `Неизвестно`.
+* Наставник: [Антон Попов](https://htmlacademy.ru/profile/joker).
 
 ---
 
