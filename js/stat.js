@@ -10,12 +10,26 @@ var BAR_WIDTH = 40;
 var BAR_HEIGHT = 150;
 var BAR_GAP = 50;
 
+/**
+ * Рисует на канвасе прямоугольник.
+ *
+ * @param {object} ctx - Контекст отрисовки.
+ * @param {number} x - Начальная координата по оси X.
+ * @param {number} y - Начальная координата по оси Y.
+ * @param {string} color - Цвет заливки.
+ */
 var renderCloud = function (ctx, x, y, color) {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);
 };
 
-var getMaxElement = function (arr) {
+/**
+ * Возвращает элемент из массива с максимальным значением.
+ *
+ * @param {array} arr - Массив.
+ * @return {number} Элемент с максимальным значением.
+ */
+var getMaxElementFromArray = function (arr) {
   var maxElement = arr[0];
   for (var i = 1; i < arr.length; i++) {
     if (maxElement < arr[i]) {
@@ -24,7 +38,13 @@ var getMaxElement = function (arr) {
   }
   return maxElement;
 };
-
+/**
+ * Функция отрисовывает статистику игры.
+ *
+ * @param {objects} ctx - Контекст отрисовки.
+ * @param {array} names - Массив с именами игроков.
+ * @param {array} times - Массив с времени прохождения игры для каждого игрока.
+ */
 window.renderStatistics = function (ctx, names, times) {
   renderCloud(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, 'rgba(0, 0, 0, 0.7)');
   renderCloud(ctx, CLOUD_X, CLOUD_Y, '#fff');
@@ -35,7 +55,7 @@ window.renderStatistics = function (ctx, names, times) {
   ctx.fillText('Ура вы победили!', CLOUD_X + GAP, CLOUD_Y + FONT_GAP);
   ctx.fillText('Список результатов:', CLOUD_X + GAP, CLOUD_Y + FONT_GAP + (GAP * 2));
 
-  var maxTime = getMaxElement(times);
+  var maxTime = getMaxElementFromArray(times);
 
   for (var i = 0; i < names.length; i++) {
     var barY = BAR_HEIGHT - (BAR_HEIGHT * times[i]) / maxTime + CLOUD_Y + (FONT_GAP * 3);
