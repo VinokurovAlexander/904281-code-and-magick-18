@@ -1,8 +1,24 @@
 'use strict';
 
-var NAMES = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
-var SUR_NAMES = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
-var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
+var FullName = {
+  NAMES: [
+    'Иван', 'Хуан Себастьян', 'Мария', 'Кристоф',
+    'Виктор', 'Юлия', 'Люпита', 'Вашингтон'
+  ],
+  SUR_NAMES: [
+    'да Марья', 'Верон', 'Мирабелла', 'Вальц',
+    'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'
+  ]
+};
+
+var COAT_COLORS = [
+  'rgb(101, 137, 164)',
+  'rgb(241, 43, 107)',
+  'rgb(146, 100, 161)',
+  'rgb(56, 159, 117)',
+  'rgb(215, 210, 55)',
+  'rgb(0, 0, 0)'
+];
 var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
 var NUMBER_OF_WIZARDS = 4;
 
@@ -22,8 +38,7 @@ document.querySelector('.setup-similar').classList.remove('hidden');
  * @return {number} Случайное число.
  */
 var getRandomNumber = function (maxValue) {
-  var randomNumber = Math.floor(Math.random() * maxValue);
-  return randomNumber;
+  return Math.floor(Math.random() * maxValue);
 };
 
 /**
@@ -34,8 +49,7 @@ var getRandomNumber = function (maxValue) {
  */
 var getRandomValueFromArray = function (arr) {
   var valueIndex = getRandomNumber(arr.length);
-  var value = arr[valueIndex];
-  return value;
+  return arr[valueIndex];
 };
 
 /**
@@ -47,14 +61,11 @@ var getRandomValueFromArray = function (arr) {
  * @return {string} Строка с именем и фамилией персонажа.
  */
 var getCharacterName = function () {
-  var fullName;
-
-  var name = getRandomValueFromArray(NAMES);
-  var surName = getRandomValueFromArray(SUR_NAMES);
+  var name = getRandomValueFromArray(FullName.NAMES);
+  var surName = getRandomValueFromArray(FullName.SUR_NAMES);
   var fullnameIndex = getRandomNumber(2);
 
-  fullName = fullnameIndex ? name + ' ' + surName : surName + ' ' + name;
-  return fullName;
+  return fullnameIndex ? name + ' ' + surName : surName + ' ' + name;
 };
 
 /**
@@ -63,16 +74,16 @@ var getCharacterName = function () {
  * @return {object} Объект персонажа.
  */
 var generateCharacter = function () {
-  var character = {};
-
-  character.name = getCharacterName();
-  character.coatColor = getRandomValueFromArray(COAT_COLORS);
-  character.eyesColor = getRandomValueFromArray(EYES_COLORS);
-  return character;
+  return {
+    name: getCharacterName(),
+    coatColor: getRandomValueFromArray(COAT_COLORS),
+    eyesColor: getRandomValueFromArray(EYES_COLORS)
+  };
 };
 
 /**
  * Генерирует массив с объектами персонажа.
+ *
  * @param {number} charactersNumber - количество генерируемых персонажей.
  * @return {array} Массив с объектами персонажа.
  */
@@ -87,6 +98,7 @@ var generateAllCharacters = function (charactersNumber) {
 
 /**
  * Подготавливает ноду с персонажем.
+ *
  * @param {object} wizard - объект персонажа с необходимыми свойствами для подготовки ноды.
  * @return {objects} Нода персонажа.
  */
@@ -101,15 +113,15 @@ var renderWizard = function (wizard) {
 
 /**
  * Добавляет персонажей в разметку HTML.
+ *
  * @param {arr} wizards - массив с обектами персонажей.
  */
-
 var appendWizards = function (wizards) {
   var fragment = document.createDocumentFragment();
 
-  for (var i = 0; i < wizards.length; i++) {
+  wizards.forEach(function (item, i) {
     fragment.appendChild(renderWizard(wizards[i]));
-  }
+  });
   similarListElement.appendChild(fragment);
 };
 
