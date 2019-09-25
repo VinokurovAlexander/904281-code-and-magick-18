@@ -22,13 +22,19 @@ var COAT_COLORS = [
 var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
 var NUMBER_OF_WIZARDS = 4;
 
-var userDialog = document.querySelector('.setup');
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 var similarListElement = document.querySelector('.setup-similar-list');
 var similarWizardTemplate = document.querySelector('#similar-wizard-template')
     .content
     .querySelector('.setup-similar-item');
 
-userDialog.classList.remove('hidden');
+var setupWindow = document.querySelector('.setup');
+var setupWindowOpenElement = document.querySelector('.setup-open');
+var setupWindowCloseBtn = setupWindow.querySelector('.setup-close');
+var inputUserName = setupWindow.querySelector('.setup-user-name');
+
 document.querySelector('.setup-similar').classList.remove('hidden');
 
 /**
@@ -125,5 +131,61 @@ var appendWizards = function (wizards) {
   similarListElement.appendChild(fragment);
 };
 
+/**
+ * Открывает окно с настройками персонажа и
+ * вешает обработчик на кнопку Esc для закрытия окна.
+ */
+var openSetupWindow = function () {
+  setupWindow.classList.remove('hidden');
+  document.addEventListener('keydown', onSetupWindowEscPress);
+};
+
+/**
+ *Закрывает окно с настройками персонажа и
+ * удаляет обработчик, отвечающий за закртиые окна по
+ * нажатию на кнопку Esc.
+ */
+var closeSetupWindow = function () {
+  setupWindow.classList.add('hidden');
+  document.removeEventListener('keydown', onSetupWindowEscPress);
+};
+
+/**
+ *Закрывает окно с настройками персонажа при нажатии на Esc.
+ *
+ * @param {object} evt - Объект события.
+ */
+var onSetupWindowEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeSetupWindow();
+  }
+};
+
+// Отрисовывем похожих персонажей
 var wizards = generateAllCharacters(NUMBER_OF_WIZARDS);
 appendWizards(wizards);
+
+// Назначаем обработчики
+setupWindowOpenElement.addEventListener('click', function () {
+  openSetupWindow();
+});
+
+setupWindowOpenElement.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    openSetupWindow();
+  }
+});
+
+setupWindowCloseBtn.addEventListener('click', function () {
+  closeSetupWindow();
+});
+
+setupWindowCloseBtn.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closeSetupWindow();
+  }
+});
+
+inputUserName.addEventListener('keydown', function (evt) {
+  evt.stopPropagation();
+});
