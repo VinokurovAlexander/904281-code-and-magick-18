@@ -20,6 +20,7 @@ var COAT_COLORS = [
   'rgb(0, 0, 0)'
 ];
 var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
+var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var NUMBER_OF_WIZARDS = 4;
 
 var ESC_KEYCODE = 27;
@@ -33,6 +34,10 @@ var similarWizardTemplate = document.querySelector('#similar-wizard-template')
 var setupWindow = document.querySelector('.setup');
 var setupWindowOpenElement = document.querySelector('.setup-open');
 var setupWindowCloseBtn = setupWindow.querySelector('.setup-close');
+var setupWizardCoat = setupWindow.querySelector('.setup-wizard .wizard-coat');
+var setupWizardEyes = setupWindow.querySelector('.setup-wizard .wizard-eyes');
+var setupWizardFireball = setupWindow.querySelector('.setup-fireball-wrap');
+
 var inputUserName = setupWindow.querySelector('.setup-user-name');
 
 document.querySelector('.setup-similar').classList.remove('hidden');
@@ -141,7 +146,7 @@ var openSetupWindow = function () {
 };
 
 /**
- *Закрывает окно с настройками персонажа и
+ * Закрывает окно с настройками персонажа и
  * удаляет обработчик, отвечающий за закртиые окна по
  * нажатию на кнопку Esc.
  */
@@ -151,7 +156,7 @@ var closeSetupWindow = function () {
 };
 
 /**
- *Закрывает окно с настройками персонажа при нажатии на Esc.
+ * Закрывает окно с настройками персонажа при нажатии на Esc.
  *
  * @param {object} evt - Объект события.
  */
@@ -159,6 +164,30 @@ var onSetupWindowEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     closeSetupWindow();
   }
+};
+
+/**
+ * Меняет цвет мантии персонажа.
+ */
+var updateSetupWizardCoatColor = function () {
+  var coatColorInput = setupWindow.querySelector('input[name="coat-color"]');
+  setupWizardCoat.style.fill = coatColorInput.value = getRandomValueFromArray(COAT_COLORS);
+};
+
+/**
+ * Меняет цвет глаз персонажа.
+ */
+var updateSetupWizardEyesColor = function () {
+  var eyesColorInput = setupWindow.querySelector('input[name="eyes-color"]');
+  setupWizardEyes.style.fill = eyesColorInput.value = getRandomValueFromArray(EYES_COLORS);
+};
+
+/**
+ * Меняет цвет фаербола.
+ */
+var updateSetupWizardFireballColor = function () {
+  var fireballColorInput = setupWindow.querySelector('input[name="fireball-color"]');
+  setupWizardFireball.style.backgroundColor = fireballColorInput.value = getRandomValueFromArray(FIREBALL_COLORS);
 };
 
 // Отрисовывем похожих персонажей
@@ -188,4 +217,16 @@ setupWindowCloseBtn.addEventListener('keydown', function (evt) {
 
 inputUserName.addEventListener('keydown', function (evt) {
   evt.stopPropagation();
+});
+
+setupWizardCoat.addEventListener('click', function () {
+  updateSetupWizardCoatColor();
+});
+
+setupWizardEyes.addEventListener('click', function () {
+  updateSetupWizardEyesColor();
+});
+
+setupWizardFireball.addEventListener('click', function () {
+  updateSetupWizardFireballColor();
 });
