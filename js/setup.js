@@ -1,18 +1,45 @@
 'use strict';
 
-var NAMES = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
-var SUR_NAMES = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
-var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
+var FullName = {
+  NAMES: [
+    'Иван', 'Хуан Себастьян', 'Мария', 'Кристоф',
+    'Виктор', 'Юлия', 'Люпита', 'Вашингтон'
+  ],
+  SUR_NAMES: [
+    'да Марья', 'Верон', 'Мирабелла', 'Вальц',
+    'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'
+  ]
+};
+
+var COAT_COLORS = [
+  'rgb(101, 137, 164)',
+  'rgb(241, 43, 107)',
+  'rgb(146, 100, 161)',
+  'rgb(56, 159, 117)',
+  'rgb(215, 210, 55)',
+  'rgb(0, 0, 0)'
+];
 var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
+var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var NUMBER_OF_WIZARDS = 4;
 
-var userDialog = document.querySelector('.setup');
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 var similarListElement = document.querySelector('.setup-similar-list');
 var similarWizardTemplate = document.querySelector('#similar-wizard-template')
     .content
     .querySelector('.setup-similar-item');
 
-userDialog.classList.remove('hidden');
+var setupWindow = document.querySelector('.setup');
+var setupWindowOpenElement = document.querySelector('.setup-open');
+var setupWindowCloseBtn = setupWindow.querySelector('.setup-close');
+var setupWizardCoat = setupWindow.querySelector('.setup-wizard .wizard-coat');
+var setupWizardEyes = setupWindow.querySelector('.setup-wizard .wizard-eyes');
+var setupWizardFireball = setupWindow.querySelector('.setup-fireball-wrap');
+
+var inputUserName = setupWindow.querySelector('.setup-user-name');
+
 document.querySelector('.setup-similar').classList.remove('hidden');
 
 /**
@@ -22,8 +49,7 @@ document.querySelector('.setup-similar').classList.remove('hidden');
  * @return {number} Случайное число.
  */
 var getRandomNumber = function (maxValue) {
-  var randomNumber = Math.floor(Math.random() * maxValue);
-  return randomNumber;
+  return Math.floor(Math.random() * maxValue);
 };
 
 /**
@@ -34,8 +60,7 @@ var getRandomNumber = function (maxValue) {
  */
 var getRandomValueFromArray = function (arr) {
   var valueIndex = getRandomNumber(arr.length);
-  var value = arr[valueIndex];
-  return value;
+  return arr[valueIndex];
 };
 
 /**
@@ -47,14 +72,11 @@ var getRandomValueFromArray = function (arr) {
  * @return {string} Строка с именем и фамилией персонажа.
  */
 var getCharacterName = function () {
-  var fullName;
-
-  var name = getRandomValueFromArray(NAMES);
-  var surName = getRandomValueFromArray(SUR_NAMES);
+  var name = getRandomValueFromArray(FullName.NAMES);
+  var surName = getRandomValueFromArray(FullName.SUR_NAMES);
   var fullnameIndex = getRandomNumber(2);
 
-  fullName = fullnameIndex ? name + ' ' + surName : surName + ' ' + name;
-  return fullName;
+  return fullnameIndex ? name + ' ' + surName : surName + ' ' + name;
 };
 
 /**
@@ -63,16 +85,16 @@ var getCharacterName = function () {
  * @return {object} Объект персонажа.
  */
 var generateCharacter = function () {
-  var character = {};
-
-  character.name = getCharacterName();
-  character.coatColor = getRandomValueFromArray(COAT_COLORS);
-  character.eyesColor = getRandomValueFromArray(EYES_COLORS);
-  return character;
+  return {
+    name: getCharacterName(),
+    coatColor: getRandomValueFromArray(COAT_COLORS),
+    eyesColor: getRandomValueFromArray(EYES_COLORS)
+  };
 };
 
 /**
  * Генерирует массив с объектами персонажа.
+ *
  * @param {number} charactersNumber - количество генерируемых персонажей.
  * @return {array} Массив с объектами персонажа.
  */
@@ -87,6 +109,7 @@ var generateAllCharacters = function (charactersNumber) {
 
 /**
  * Подготавливает ноду с персонажем.
+ *
  * @param {object} wizard - объект персонажа с необходимыми свойствами для подготовки ноды.
  * @return {objects} Нода персонажа.
  */
@@ -101,17 +124,109 @@ var renderWizard = function (wizard) {
 
 /**
  * Добавляет персонажей в разметку HTML.
+ *
  * @param {arr} wizards - массив с обектами персонажей.
  */
-
 var appendWizards = function (wizards) {
   var fragment = document.createDocumentFragment();
 
-  for (var i = 0; i < wizards.length; i++) {
+  wizards.forEach(function (item, i) {
     fragment.appendChild(renderWizard(wizards[i]));
-  }
+  });
   similarListElement.appendChild(fragment);
 };
 
+/**
+ * Открывает окно с настройками персонажа и
+ * вешает обработчик на кнопку Esc для закрытия окна.
+ */
+var openSetupWindow = function () {
+  setupWindow.classList.remove('hidden');
+  document.addEventListener('keydown', onSetupWindowEscPress);
+};
+
+/**
+ * Закрывает окно с настройками персонажа и
+ * удаляет обработчик, отвечающий за закртиые окна по
+ * нажатию на кнопку Esc.
+ */
+var closeSetupWindow = function () {
+  setupWindow.classList.add('hidden');
+  document.removeEventListener('keydown', onSetupWindowEscPress);
+};
+
+/**
+ * Закрывает окно с настройками персонажа при нажатии на Esc.
+ *
+ * @param {object} evt - Объект события.
+ */
+var onSetupWindowEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeSetupWindow();
+  }
+};
+
+/**
+ * Меняет цвет мантии персонажа.
+ */
+var updateSetupWizardCoatColor = function () {
+  var coatColorInput = setupWindow.querySelector('input[name="coat-color"]');
+  setupWizardCoat.style.fill = coatColorInput.value = getRandomValueFromArray(COAT_COLORS);
+};
+
+/**
+ * Меняет цвет глаз персонажа.
+ */
+var updateSetupWizardEyesColor = function () {
+  var eyesColorInput = setupWindow.querySelector('input[name="eyes-color"]');
+  setupWizardEyes.style.fill = eyesColorInput.value = getRandomValueFromArray(EYES_COLORS);
+};
+
+/**
+ * Меняет цвет фаербола.
+ */
+var updateSetupWizardFireballColor = function () {
+  var fireballColorInput = setupWindow.querySelector('input[name="fireball-color"]');
+  setupWizardFireball.style.backgroundColor = fireballColorInput.value = getRandomValueFromArray(FIREBALL_COLORS);
+};
+
+// Отрисовывем похожих персонажей
 var wizards = generateAllCharacters(NUMBER_OF_WIZARDS);
 appendWizards(wizards);
+
+// Назначаем обработчики
+setupWindowOpenElement.addEventListener('click', function () {
+  openSetupWindow();
+});
+
+setupWindowOpenElement.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    openSetupWindow();
+  }
+});
+
+setupWindowCloseBtn.addEventListener('click', function () {
+  closeSetupWindow();
+});
+
+setupWindowCloseBtn.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closeSetupWindow();
+  }
+});
+
+inputUserName.addEventListener('keydown', function (evt) {
+  evt.stopPropagation();
+});
+
+setupWizardCoat.addEventListener('click', function () {
+  updateSetupWizardCoatColor();
+});
+
+setupWizardEyes.addEventListener('click', function () {
+  updateSetupWizardEyesColor();
+});
+
+setupWizardFireball.addEventListener('click', function () {
+  updateSetupWizardFireballColor();
+});

@@ -1019,3 +1019,9 @@ input[type=radio]:checked + .review-mark-label
 
     opacity: 0;
 }
+
+.setup-wizard .wizard-coat:hover,
+.setup-wizard .wizard-eyes:hover,
+.setup-fireball-wrap:hover {
+  cursor: pointer;
+}
