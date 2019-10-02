@@ -35,11 +35,6 @@ var similarWizardTemplate = document.querySelector('#similar-wizard-template')
 var setupWindow = document.querySelector('.setup');
 var setupWindowOpenElement = document.querySelector('.setup-open');
 var setupWindowCloseBtn = setupWindow.querySelector('.setup-close');
-// var setupWizardCoat = setupWindow.querySelector('.setup-wizard .wizard-coat');
-// var setupWizardEyes = setupWindow.querySelector('.setup-wizard .wizard-eyes');
-// var setupWizardFireball = setupWindow.querySelector('.setup-fireball-wrap');
-
-
 var inputUserName = setupWindow.querySelector('.setup-user-name');
 
 document.querySelector('.setup-similar').classList.remove('hidden');
@@ -163,8 +158,15 @@ var closeSetupWindow = function () {
  * @param {object} evt - Объект события.
  */
 var setupWindowEscPressHandler = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    closeSetupWindow();
+  isEscEvent(evt, closeSetupWindow);
+};
+
+var wizardItems = {
+  coat: setupWindow.querySelector('.setup-wizard .wizard-coat'),
+  eyes: setupWindow.querySelector('.setup-wizard .wizard-eyes'),
+  fireball: {
+    target: setupWindow.querySelector('.setup-fireball'),
+    color: setupWindow.querySelector('.setup-fireball-wrap')
   }
 };
 
@@ -174,13 +176,55 @@ var setupWindowEscPressHandler = function (evt) {
  * @param {string} item - Часть персонажа, цвет которой необходимо поменять.
  * Принимает значения: coat, eyes, fireball.
  */
-var updateWizardColor = function (item) {
+var updateColor = function (item) {
   var itemInput = setupWindow.querySelector('input[name="' + item + '-color"]');
 
   if (item === 'fireball') {
-    wizardItems[item].style.backgroundColor = itemInput.value = getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
+    wizardItems[item].color.style.backgroundColor = itemInput.value = getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
   } else {
     wizardItems[item].style.fill = itemInput.value = getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
+  }
+};
+
+/**
+ * Определяет источник по которому возник клик мышки
+ * и меняет соответствующий цвет элемента.
+ *
+ * @param {obj} evt - объект события.
+ */
+var getTargetAndUpdateColor = function (evt) {
+  for (var item in wizardItems) {
+    if (wizardItems.hasOwnProperty(item)) {
+      if (evt.target === wizardItems.fireball.target) {
+        updateColor('fireball');
+      } else if (evt.target === wizardItems[item]) {
+        updateColor(item);
+      }
+    }
+  }
+};
+
+/**
+ * Функция для обработки событий при нажатию на ESC.
+ *
+ * @param {object} evt - объект события
+ * @param {function} action - фукнция, которую необходимо выполнить
+ */
+var isEscEvent = function (evt, action) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    action();
+  }
+};
+
+/**
+ * Функция для обработки событий при нажатию на ENTER.
+ *
+ * @param {object} evt - объект события
+ * @param {function} action - фукнция, которую необходимо выполнить
+ */
+var isEnterEvent = function (evt, action) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    action();
   }
 };
 
@@ -194,9 +238,7 @@ setupWindowOpenElement.addEventListener('click', function () {
 });
 
 setupWindowOpenElement.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    openSetupWindow();
-  }
+  isEnterEvent(evt, openSetupWindow);
 });
 
 setupWindowCloseBtn.addEventListener('click', function () {
@@ -204,49 +246,13 @@ setupWindowCloseBtn.addEventListener('click', function () {
 });
 
 setupWindowCloseBtn.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    closeSetupWindow();
-  }
+  isEnterEvent(evt, closeSetupWindow);
 });
 
 inputUserName.addEventListener('keydown', function (evt) {
   evt.stopPropagation();
 });
 
-// setupWizardCoat.addEventListener('click', function () {
-//   // updateSetupWizardCoatColor();
-//   updateWizardColor('coat');
-// });
-//
-// setupWizardEyes.addEventListener('click', function () {
-//   // updateSetupWizardEyesColor();
-//   updateWizardColor('eyes');
-// });
-//
-// setupWizardFireball.addEventListener('click', function () {
-//   // updateSetupWizardFireballColor();
-//   updateWizardColor('fireball');
-// });
-
-var wizardItems = {
-  coat: setupWindow.querySelector('.setup-wizard .wizard-coat'),
-  eyes: setupWindow.querySelector('.setup-wizard .wizard-eyes'),
-  fireball: setupWindow.querySelector('.setup-fireball-wrap')
-};
-
 setupWindow.addEventListener('click', function (evt) {
-  for (var item in wizardItems) {
-    if (wizardItems.hasOwnProperty(item)) {
-      // if (evt.target === wizardItems[item]) {
-      //   // updateWizardColor(wizardItems[item].className.split('-')[1]);
-      //   console.log(wizardItems[item]);
-      //   console.log(wizardItems[item].className.baseVal);
-      // }
-      console.log(wizardItems[item]);
-      console.log(wizardItems[item].className);
-    }
-  }
-  // console.log(evt.target);
-  // console.log()
-
+  getTargetAndUpdateColor(evt);
 });
