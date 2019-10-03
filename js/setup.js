@@ -33,10 +33,14 @@
       .content
       .querySelector('.setup-similar-item');
 
-  var setupWindow = document.querySelector('.setup');
+  window.setupWindow = document.querySelector('.setup');
   var setupWindowOpenElement = document.querySelector('.setup-open');
-  var setupWindowCloseBtn = setupWindow.querySelector('.setup-close');
-  var inputUserName = setupWindow.querySelector('.setup-user-name');
+  var setupWindowCloseBtn = window.setupWindow.querySelector('.setup-close');
+  var setupWindowStartCoords = {
+    x: window.getComputedStyle(window.setupWindow).left,
+    y: window.getComputedStyle(window.setupWindow).top
+  };
+  var inputUserName = window.setupWindow.querySelector('.setup-user-name');
 
   document.querySelector('.setup-similar').classList.remove('hidden');
 
@@ -139,7 +143,7 @@
    * вешает обработчик на кнопку Esc для закрытия окна.
    */
   var openSetupWindow = function () {
-    setupWindow.classList.remove('hidden');
+    window.setupWindow.classList.remove('hidden');
     document.addEventListener('keydown', setupWindowEscPressHandler);
   };
 
@@ -149,8 +153,10 @@
    * нажатию на кнопку Esc.
    */
   var closeSetupWindow = function () {
-    setupWindow.classList.add('hidden');
+    window.setupWindow.classList.add('hidden');
     document.removeEventListener('keydown', setupWindowEscPressHandler);
+    window.setupWindow.style.left = setupWindowStartCoords.x;
+    window.setupWindow.style.top = setupWindowStartCoords.y;
   };
 
   /**
@@ -163,11 +169,11 @@
   };
 
   var wizardItems = {
-    coat: setupWindow.querySelector('.setup-wizard .wizard-coat'),
-    eyes: setupWindow.querySelector('.setup-wizard .wizard-eyes'),
+    coat: window.setupWindow.querySelector('.setup-wizard .wizard-coat'),
+    eyes: window.setupWindow.querySelector('.setup-wizard .wizard-eyes'),
     fireball: {
-      target: setupWindow.querySelector('.setup-fireball'),
-      color: setupWindow.querySelector('.setup-fireball-wrap')
+      target: window.setupWindow.querySelector('.setup-fireball'),
+      color: window.setupWindow.querySelector('.setup-fireball-wrap')
     }
   };
 
@@ -178,7 +184,7 @@
    * Принимает значения: coat, eyes, fireball.
    */
   var updateColor = function (item) {
-    var itemInput = setupWindow.querySelector('input[name="' + item + '-color"]');
+    var itemInput = window.setupWindow.querySelector('input[name="' + item + '-color"]');
 
     if (item === 'fireball') {
       wizardItems[item].color.style.backgroundColor = itemInput.value = getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
@@ -254,7 +260,7 @@
     evt.stopPropagation();
   });
 
-  setupWindow.addEventListener('click', function (evt) {
+  window.setupWindow.addEventListener('click', function (evt) {
     getTargetAndUpdateColor(evt);
   });
 })();
