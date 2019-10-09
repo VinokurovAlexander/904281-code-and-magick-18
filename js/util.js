@@ -30,13 +30,13 @@
     },
 
     /**
-     * Возвращает случайное число в диапазоне от 0 до maxValue.
+     * Возвращает случайное число в диапазоне от 0 до maxValue(не включая).
      *
      * @param {number} maxValue - верхняя граница диапазона.
      * @return {number} Случайное число.
      */
     getRandomNumber: function (maxValue) {
-      return Math.floor(Math.random() * maxValue + 1);
+      return Math.floor(Math.random() * maxValue);
     },
 
     /**
