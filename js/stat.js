@@ -25,21 +25,6 @@
   };
 
   /**
-   * Возвращает элемент из массива с максимальным значением.
-   *
-   * @param {array} arr - Массив.
-   * @return {number} Элемент с максимальным значением.
-   */
-  var getMaxElementFromArray = function (arr) {
-    var maxElement = arr[0];
-    for (var i = 1; i < arr.length; i++) {
-      if (maxElement < arr[i]) {
-        maxElement = arr[i];
-      }
-    }
-    return maxElement;
-  };
-  /**
    * Функция отрисовывает статистику игры.
    *
    * @param {objects} ctx - Контекст отрисовки.
@@ -56,7 +41,7 @@
     ctx.fillText('Ура вы победили!', CLOUD_X + GAP, CLOUD_Y + FONT_GAP);
     ctx.fillText('Список результатов:', CLOUD_X + GAP, CLOUD_Y + FONT_GAP + (GAP * 2));
 
-    var maxTime = getMaxElementFromArray(times);
+    var maxTime = window.util.getMaxElementFromArray(times);
 
     for (var i = 0; i < names.length; i++) {
       var barY = BAR_HEIGHT - (BAR_HEIGHT * times[i]) / maxTime + CLOUD_Y + (FONT_GAP * 3);

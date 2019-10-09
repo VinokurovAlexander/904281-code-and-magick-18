@@ -1,17 +1,6 @@
 'use strict';
 
 (function () {
-  var FullName = {
-    NAMES: [
-      'Иван', 'Хуан Себастьян', 'Мария', 'Кристоф',
-      'Виктор', 'Юлия', 'Люпита', 'Вашингтон'
-    ],
-    SUR_NAMES: [
-      'да Марья', 'Верон', 'Мирабелла', 'Вальц',
-      'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'
-    ]
-  };
-
   var Colors = {
     COAT_COLORS: [
       'rgb(101, 137, 164)',
@@ -25,8 +14,8 @@
   };
 
   var NUMBER_OF_WIZARDS = 4;
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+  var LOAD_WIZARDS_URL = 'https://js.dump.academy/code-and-magick/data';
+  var SAVE_WIZARDS_URL = 'https://js.dump.academy/code-and-magick';
 
   var similarListElement = document.querySelector('.setup-similar-list');
   var similarWizardTemplate = document.querySelector('#similar-wizard-template')
@@ -41,73 +30,9 @@
     y: window.getComputedStyle(window.setupWindow).top
   };
   var inputUserName = window.setupWindow.querySelector('.setup-user-name');
+  var isWizardsLoad = false;
 
   document.querySelector('.setup-similar').classList.remove('hidden');
-
-  /**
-   * Возвращает случайное число в диапазоне от 0 до maxValue(не включая).
-   *
-   * @param {number} maxValue - верхняя граница диапазона.
-   * @return {number} Случайное число.
-   */
-  var getRandomNumber = function (maxValue) {
-    return Math.floor(Math.random() * maxValue);
-  };
-
-  /**
-   * Возвращает случайное значение из массива.
-   *
-   * @param {array} arr - массив, из которого нужно получить значение.
-   * @return {*} Случайное значение из массива.
-   */
-  var getRandomValueFromArray = function (arr) {
-    var valueIndex = getRandomNumber(arr.length);
-    return arr[valueIndex];
-  };
-
-  /**
-   * Составляет полное имя для персонажа, состоящие из имени и фамилии.
-   * Случайные значения для имени и фамилии берутся из массивов NAMES и SUR_NAMES соответственно.
-   * Расположение имени и фамилии в итоговой строке зависит от значения
-   * переменной fullnameIndex(true или false).
-   *
-   * @return {string} Строка с именем и фамилией персонажа.
-   */
-  var getCharacterName = function () {
-    var name = getRandomValueFromArray(FullName.NAMES);
-    var surName = getRandomValueFromArray(FullName.SUR_NAMES);
-    var fullnameIndex = getRandomNumber(2);
-
-    return fullnameIndex ? name + ' ' + surName : surName + ' ' + name;
-  };
-
-  /**
-   * Генерирует объект персонажа.
-   *
-   * @return {object} Объект персонажа.
-   */
-  var generateCharacter = function () {
-    return {
-      name: getCharacterName(),
-      coatColor: getRandomValueFromArray(Colors.COAT_COLORS),
-      eyesColor: getRandomValueFromArray(Colors.EYES_COLORS)
-    };
-  };
-
-  /**
-   * Генерирует массив с объектами персонажа.
-   *
-   * @param {number} charactersNumber - количество генерируемых персонажей.
-   * @return {array} Массив с объектами персонажа.
-   */
-  var generateAllCharacters = function (charactersNumber) {
-    var characters = [];
-
-    for (var i = 0; i < charactersNumber; i++) {
-      characters.push(generateCharacter());
-    }
-    return characters;
-  };
 
   /**
    * Подготавливает ноду с персонажем.
@@ -119,7 +44,7 @@
     var wizardElement = similarWizardTemplate.cloneNode(true);
 
     wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill = wizard.coatColor;
+    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
     wizardElement.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
     return wizardElement;
   };
@@ -132,9 +57,9 @@
   var appendWizards = function (wizards) {
     var fragment = document.createDocumentFragment();
 
-    wizards.forEach(function (wizard) {
-      fragment.appendChild(renderWizard(wizard));
-    });
+    for (var i = 0; i < NUMBER_OF_WIZARDS; i++) {
+      fragment.appendChild(renderWizard(wizards[i]));
+    }
     similarListElement.appendChild(fragment);
   };
 
@@ -145,6 +70,10 @@
   var openSetupWindow = function () {
     window.setupWindow.classList.remove('hidden');
     document.addEventListener('keydown', setupWindowEscPressHandler);
+    if (!isWizardsLoad) {
+      window.backend.load(LOAD_WIZARDS_URL, appendWizards, errorHandler);
+      isWizardsLoad = true;
+    }
   };
 
   /**
@@ -165,7 +94,7 @@
    * @param {object} evt - Объект события.
    */
   var setupWindowEscPressHandler = function (evt) {
-    isEscEvent(evt, closeSetupWindow);
+    window.util.isEscEvent(evt, closeSetupWindow);
   };
 
   var wizardItems = {
@@ -187,9 +116,9 @@
     var itemInput = window.setupWindow.querySelector('input[name="' + item + '-color"]');
 
     if (item === 'fireball') {
-      wizardItems[item].color.style.backgroundColor = itemInput.value = getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
+      wizardItems[item].color.style.backgroundColor = itemInput.value = window.util.getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
     } else {
-      wizardItems[item].style.fill = itemInput.value = getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
+      wizardItems[item].style.fill = itemInput.value = window.util.getRandomValueFromArray(Colors[item.toUpperCase() + '_COLORS']);
     }
   };
 
@@ -212,32 +141,34 @@
   };
 
   /**
-   * Функция для обработки событий при нажатию на ESC.
+   * Функция, которая отображает ошибки при загрузке данных с сервера.
    *
-   * @param {object} evt - объект события
-   * @param {function} action - фукнция, которую необходимо выполнить
+   * @param {string} errorMessage - текст ошибки.
    */
-  var isEscEvent = function (evt, action) {
-    if (evt.keyCode === ESC_KEYCODE) {
-      action();
-    }
+  var errorHandler = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
   };
 
   /**
-   * Функция для обработки событий при нажатию на ENTER.
+   * Отправка формы с волшебником на сервер и
+   * закрытие окна с настройками персонажа.
    *
-   * @param {object} evt - объект события
-   * @param {function} action - фукнция, которую необходимо выполнить
+   * @param {objects} evt - Объект события.
    */
-  var isEnterEvent = function (evt, action) {
-    if (evt.keyCode === ENTER_KEYCODE) {
-      action();
-    }
+  var saveWizards = function (evt) {
+    window.backend.save(SAVE_WIZARDS_URL, new FormData(form), function () {
+      window.setupWindow.classList.add('hidden');
+    }, errorHandler);
+    evt.preventDefault();
   };
-
-  // Отрисовывем похожих персонажей
-  var wizards = generateAllCharacters(NUMBER_OF_WIZARDS);
-  appendWizards(wizards);
 
   // Назначаем обработчики
   setupWindowOpenElement.addEventListener('click', function () {
@@ -245,7 +176,7 @@
   });
 
   setupWindowOpenElement.addEventListener('keydown', function (evt) {
-    isEnterEvent(evt, openSetupWindow);
+    window.util.isEnterEvent(evt, openSetupWindow);
   });
 
   setupWindowCloseBtn.addEventListener('click', function () {
@@ -253,7 +184,7 @@
   });
 
   setupWindowCloseBtn.addEventListener('keydown', function (evt) {
-    isEnterEvent(evt, closeSetupWindow);
+    window.util.isEnterEvent(evt, closeSetupWindow);
   });
 
   inputUserName.addEventListener('keydown', function (evt) {
@@ -262,5 +193,10 @@
 
   window.setupWindow.addEventListener('click', function (evt) {
     getTargetAndUpdateColor(evt);
+  });
+
+  var form = document.querySelector('.setup-wizard-form');
+  form.addEventListener('submit', function (evt) {
+    saveWizards(evt);
   });
 })();
