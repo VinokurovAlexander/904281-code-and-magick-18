@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var OK_STATUS_CODE = 200;
+  var REQUEST_TIMEOUT = 10000;
+
   /**
    * Инициализирует объект XHR и навешивает обработчики для
    * успешного и неуспешного выполнения запроса.
@@ -17,7 +20,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === OK_STATUS_CODE) {
         onLoad(xhr.response);
       } else {
         onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -31,7 +34,7 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 10000;
+    xhr.timeout = REQUEST_TIMEOUT;
 
     return xhr;
   };

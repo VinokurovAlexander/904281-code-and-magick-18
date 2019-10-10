@@ -14,8 +14,10 @@
   };
 
   var NUMBER_OF_WIZARDS = 4;
-  var LOAD_WIZARDS_URL = 'https://js.dump.academy/code-and-magick/data';
-  var SAVE_WIZARDS_URL = 'https://js.dump.academy/code-and-magick';
+  var WIZARDS_URL = {
+    LOAD: 'https://js.dump.academy/code-and-magick/data',
+    SAVE: 'https://js.dump.academy/code-and-magick'
+  };
 
   var similarListElement = document.querySelector('.setup-similar-list');
   var similarWizardTemplate = document.querySelector('#similar-wizard-template')
@@ -71,7 +73,7 @@
     window.setupWindow.classList.remove('hidden');
     document.addEventListener('keydown', setupWindowEscPressHandler);
     if (!isWizardsLoad) {
-      window.backend.load(LOAD_WIZARDS_URL, appendWizards, errorHandler);
+      window.backend.load(WIZARDS_URL.LOAD, appendWizards, errorHandler);
       isWizardsLoad = true;
     }
   };
@@ -164,7 +166,7 @@
    * @param {objects} evt - Объект события.
    */
   var saveWizards = function (evt) {
-    window.backend.save(SAVE_WIZARDS_URL, new FormData(form), function () {
+    window.backend.save(WIZARDS_URL.SAVE, new FormData(form), function () {
       window.setupWindow.classList.add('hidden');
     }, errorHandler);
     evt.preventDefault();

@@ -1,8 +1,10 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+  var KEYCODE = {
+    ESC: 27,
+    ENTER: 13
+  };
 
   window.util = {
     /**
@@ -12,7 +14,7 @@
      * @param {function} action - функция, которую необходимо выполнить
      */
     isEscEvent: function (evt, action) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === KEYCODE.ESC) {
         action();
       }
     },
@@ -24,7 +26,7 @@
      * @param {function} action - функция, которую необходимо выполнить.
      */
     isEnterEvent: function (evt, action) {
-      if (evt.keyCode === ENTER_KEYCODE) {
+      if (evt.keyCode === KEYCODE.ENTER) {
         action();
       }
     },
